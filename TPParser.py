@@ -1,7 +1,7 @@
 def decouperbloc(Path):
     list=[]
     fichier = open(Path, "rb").read().hex()
-    n=len(file)
+    n=len(fichier)
     i=8
     while i<n:
         type = fichier[i:i+2]
