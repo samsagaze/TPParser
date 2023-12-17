@@ -1,51 +1,99 @@
 def decouperbloc(fichier):
-    list=[]
-    n=len(fichier)
-    i=8
-    while i<n:
-        type = fichier[i:i+2]
-        print(type)
-        if type not in [43, 48, 44]:
+    listebloc = []
+    n = len(fichier)
+    i = 8
+    while i < n:
+        typepixel = fichier[i:i + 2]
+        print(typepixel)
+        if typepixel not in [43, 48, 44]:
             raise Exception("Problème : un bloc n'est pas H, C ou D")
-        longueur = int(fichier[i+2:i+10], 16)
-        contenu = fichier[i+10:i+10+2*longueur]
-        if type == 44:
-            if longueur != len(contenu)//4:
-                raise Exception("problème d'écarts entre la longueur annoncée et la longueur réelle sur un bloc de données")
-        list.append((type, contenu))
-        i = i+10+2*longueur
-    if i!=n:
+        longueur = int(fichier[i + 2:i + 10], 16)
+        contenu = fichier[i + 10:i + 10 + 2 * longueur]
+        if typepixel == 44:
+            if longueur != len(contenu) // 4:
+                raise Exception(
+                    "problème d'écarts entre la longueur annoncée et la longueur réelle sur un bloc de données")
+        listebloc.append((typepixel, contenu))
+        i = i + 10 + 2 * longueur
+    if i != n:
         raise Exception("problème d'écarts entre la longueur annoncée et la longueur réelle")
-    return list
+    return listebloc
+
 
 def Commentaires(listeblocs):
-    commentaireshex= ""
-    for (type, contenu) in listeblocs:
-        if type == 43:      #43 correspond à C en ASCII
+    commentaireshex = ""
+    for (typebloc, contenu) in listeblocs:
+        if typebloc == 43:  # 43 correspond à C en ASCII
             commentaireshex += contenu + " "
     return bytes.fromhex(commentaireshex).decode("ASCII")
 
-def PremierPas(path):                 #file sous forme C:/...
+
+def PremierPas(path):  # file sous forme C:/...
     fichier = open(path, "rb").read().hex()
-    Largeur = int(fichier[26:34], 16)
-    Hauteur = int(fichier[34:42], 16)
-    Type_Pixel = int(fichier[42:44], 16)
-    if Type_Pixel == 0:
-        Type = "noir et blanc"
-    elif Type_Pixel == 1:
-        Type = "niveaux de gris"
-    elif Type_Pixel ==2:
-        Type = "palette"
-    elif Type_Pixel ==3:
-        Type = "couleurs 24 bits"
+    largeur = int(fichier[26:34], 16)
+    hauteur = int(fichier[34:42], 16)
+    type_pixel = int(fichier[42:44], 16)
+    listeblocs = decouperbloc(fichier)
+    if type_pixel == 0:
+        typepixelstring = "noir et blanc"
+        boolconforme = isdonnesconformesnoiretblanc(largeur, hauteur, listeblocs)
+    elif type_pixel == 1:
+        typepixelstring = "niveaux de gris"
+        boolconforme = isdonnesconformesniveauxdegris(largeur, hauteur, listeblocs)
+    elif type_pixel == 2:
+        typepixelstring = "palette"
+        boolconforme = False
+    elif type_pixel == 3:
+        typepixelstring = "couleurs 24 bits"
+        boolconforme = False
     else:
         raise Exception("mauvais type de pixels")
-    listeblocs = decouperbloc(fichier)
-    print("Largeur : ", Largeur)
-    print("Hauteur : ", Hauteur)
-    print("Type de pixel : ", Type_Pixel, " ", Type)
+    print("Largeur : ", largeur)
+    print("Hauteur : ", hauteur)
+    print("Type de pixel : ", type_pixel, " ", typepixelstring)
     print("Commentaires :")
     print(Commentaires(listeblocs))
+    print("les donnees sont conformes : ", boolconforme)
     return
 
 
+def isdonnesconformesnoiretblanc(largeur, hauteur,
+                                 listedeblocs):  # On veut que Hauteur * Largeur * nombre octets par pixel = taille
+    # fichier donnees
+    donnees = ''
+    for (type_bloc, contenu) in listedeblocs:
+        if type_bloc == 44:
+            donnees += contenu
+    tailledonneesbit = len(donnees) * 4
+    return tailledonneesbit == largeur * hauteur
+
+
+def Afficherimage(path):
+    fichier = open(path, "rb").read().hex()
+    largeur = int(fichier[26:34], 16)
+    hauteur = int(fichier[34:42], 16)
+    type_pixel = int(fichier[42:44], 16)
+    listeblocs = decouperbloc(fichier)
+    if type_pixel != 0:
+        raise Exception("Image pas en noir et blanc")
+    donnees = ''
+    for (type_bloc, contenu) in listeblocs:
+        if type_bloc == 44:
+            donnees += bin(int(contenu, 16))
+    for i in range(hauteur):
+        for j in range(largeur):
+            if donnees[i * hauteur + j] == 0:
+                print("X", end='')
+        print("")  # faire un retour à la ligne une fois la largeur finie
+    return
+
+
+def isdonnesconformesniveauxdegris(largeur, hauteur,
+                                   listedeblocs):  # On veut que Hauteur * Largeur * nombre octets par pixel = taille
+    # fichier donnees
+    donnees = ''
+    for (type_bloc, contenu) in listedeblocs:
+        if type_bloc == 44:
+            donnees += contenu
+    tailledonneesbit = len(donnees) * 4
+    return tailledonneesbit == largeur * hauteur * 8
