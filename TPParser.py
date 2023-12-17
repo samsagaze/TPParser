@@ -45,7 +45,7 @@ def PremierPas(path):  # file sous forme C:/...
         boolconforme = False
     elif type_pixel == 3:
         typepixelstring = "couleurs 24 bits"
-        boolconforme = False
+        boolconforme = isdonnesconformes24bits(largeur, hauteur, listeblocs)
     else:
         raise Exception("mauvais type de pixels")
     print("Largeur : ", largeur)
@@ -97,3 +97,13 @@ def isdonnesconformesniveauxdegris(largeur, hauteur,
             donnees += contenu
     tailledonneesbit = len(donnees) * 4
     return tailledonneesbit == largeur * hauteur * 8
+
+def isdonnesconformes24bits(largeur, hauteur,
+                                   listedeblocs):  # On veut que Hauteur * Largeur * nombre octets par pixel = taille
+    # fichier donnees
+    donnees = ''
+    for (type_bloc, contenu) in listedeblocs:
+        if type_bloc == 44:
+            donnees += contenu
+    tailledonneesbit = len(donnees) * 4
+    return tailledonneesbit == largeur * hauteur * 24
