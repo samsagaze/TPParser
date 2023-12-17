@@ -41,3 +41,10 @@ def PremierPas(path):                 #file sous forme C:/...
     print("Type de pixel : ", Type_Pixel, " ", Type)
     return
 
+def Trouvercomentaires(liste):
+    commentaireshex = ""
+    for (type, contenu) in liste:
+        if type == "43":
+            commentaireshex+=contenu
+    return commentaireshex
+
