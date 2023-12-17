@@ -1,6 +1,5 @@
-def decouperbloc(Path):
+def decouperbloc(fichier):
     list=[]
-    fichier = open(Path, "rb").read().hex()
     n=len(fichier)
     i=8
     while i<n:
@@ -10,16 +9,21 @@ def decouperbloc(Path):
             raise Exception("Problème : un bloc n'est pas H, C ou D")
         longueur = int(fichier[i+2:i+10], 16)
         contenu = fichier[i+10:i+10+2*longueur]
+        if type == 44:
+            if longueur != len(contenu)//4:
+                raise Exception("problème d'écarts entre la longueur annoncée et la longueur réelle sur un bloc de données")
         list.append((type, contenu))
-        i+10+2*longueur
+        i = i+10+2*longueur
     if i!=n:
         raise Exception("problème d'écarts entre la longueur annoncée et la longueur réelle")
     return list
 
-
-
-
-
+def Commentaires(listeblocs):
+    commentaireshex= ""
+    for (type, contenu) in listeblocs:
+        if type == 43:      #43 correspond à C en ASCII
+            commentaireshex += contenu + " "
+    return bytes.fromhex(commentaireshex).decode("ASCII")
 
 def PremierPas(path):                 #file sous forme C:/...
     fichier = open(path, "rb").read().hex()
@@ -36,15 +40,12 @@ def PremierPas(path):                 #file sous forme C:/...
         Type = "couleurs 24 bits"
     else:
         raise Exception("mauvais type de pixels")
+    listeblocs = decouperbloc(fichier)
     print("Largeur : ", Largeur)
     print("Hauteur : ", Hauteur)
     print("Type de pixel : ", Type_Pixel, " ", Type)
+    print("Commentaires :")
+    print(Commentaires(listeblocs))
     return
 
-def Trouvercomentaires(liste):
-    commentaireshex = ""
-    for (type, contenu) in liste:
-        if type == "43":
-            commentaireshex+=contenu
-    return commentaireshex
 
