@@ -1,3 +1,6 @@
+def obtenirfichier(path):
+
+
 def decouperbloc(fichier):
     listebloc = []
     n = len(fichier)
@@ -68,8 +71,7 @@ def isdonnesconformesnoiretblanc(largeur, hauteur,
     return tailledonneesbit == largeur * hauteur
 
 
-def Afficherimage(path):
-    fichier = open(path, "rb").read().hex()
+def Afficherimagenoiretblanc(fichier):
     largeur = int(fichier[26:34], 16)
     hauteur = int(fichier[34:42], 16)
     type_pixel = int(fichier[42:44], 16)
@@ -77,12 +79,13 @@ def Afficherimage(path):
     if type_pixel != 0:
         raise Exception("Image pas en noir et blanc")
     donnees = ''
+    print(listeblocs)
     for (type_bloc, contenu) in listeblocs:
         if type_bloc == 44:
             donnees += bin(int(contenu, 16))
     for i in range(hauteur):
         for j in range(largeur):
-            if donnees[i * hauteur + j] == 0:
+            if donnees[i * (hauteur-1) + j] == 0:
                 print("X", end='')
         print("")  # faire un retour à la ligne une fois la largeur finie
     return
@@ -107,3 +110,5 @@ def isdonnesconformes24bits(largeur, hauteur,
             donnees += contenu
     tailledonneesbit = len(donnees) * 4
     return tailledonneesbit == largeur * hauteur * 24
+
+#def Afficherimageniveauxdegris(fichier):
