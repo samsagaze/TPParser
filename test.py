@@ -6,5 +6,5 @@ import TPParser as tppar
 #image.show()
 #print(tppar.Header(tppar.decouperbloc(tppar.obtenirfichier("C:/Users/samsa/Desktop/minipng-samples/bw/ok/unordered_A.mp"))))
 #tppar.Afficherimage24bits((tppar.obtenirfichier(("C:/Users/samsa/Desktop/minipng-samples/other/ok/french-flag.mp"))))
-tppar.Informations("C:/Users/samsa/Desktop/minipng-samples/bw/nok/wrong-magic.mp")
-tppar.Afficherimage("C:/Users/samsa/Desktop/minipng-samples/bw/nok/wrong-magic.mp")
+tppar.Informations("C:/Users/samsa/Desktop/minipng-samples/other/ok/gray.mp")
+tppar.Afficherimage("C:/Users/samsa/Desktop/minipng-samples/other/ok/gray.mp")
