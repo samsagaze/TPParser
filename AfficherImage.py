@@ -67,6 +67,9 @@ def Afficherimagepalette(listeblocs, largeur, hauteur):
             listedonnees += [contenu]
         elif type_bloc == 80:
             palette = contenu
+    taillepalette = len(palette) // 3
+    if taillepalette != len(palette) // 3:
+        raise Exception("mauvaise configuration de la palette")
     afficherpalette(palette)
     donnees = fb.concatenerlistebytes(listedonnees)
     n = len(donnees)
@@ -78,7 +81,7 @@ def Afficherimagepalette(listeblocs, largeur, hauteur):
     for i in range(hauteur):
         for j in range(largeur):
             valeurpixel = donnees[i*largeur+j]
-            if valeurpixel >= n:
+            if valeurpixel >= taillepalette:
                 raise Exception("valeur du pixel hors de la palette")
             pixelmap[j, i] = valeurpixel
     image.show()

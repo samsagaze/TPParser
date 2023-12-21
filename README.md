@@ -1,5 +1,4 @@
 # TPParser
- Tp parser cybersécurité
+ Tp parser cybersécurité : Samuel Dicky et Tawfik Bennani
 
-Problèmes : other/ok/palette : données affichées non conformes
-et wrongmagic affichées conformes
+Un path doit etre contenir des / plutot que des \

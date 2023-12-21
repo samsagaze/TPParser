@@ -23,66 +23,71 @@ def Header(listeblocs):
 # Données conformes
 
 def isdonnesconformesnoiretblanc(largeur, hauteur,
-                                 listeblocs):  # On veut que Hauteur * Largeur * nombre octets par pixel = taille
+                                 listeblocs, debut):  # On veut que Hauteur * Largeur * nombre octets par pixel = taille
     # fichier donnees
     listedonnees = []
-    bool = True
     for i in range(len(listeblocs)):
         (type_bloc, l), contenu = listeblocs[i]
         if type_bloc == 68:
             listedonnees += [contenu]
         bonnelongueur = l == len(contenu)
         if not bonnelongueur:
-            bool = False
+            return False
     donnees = fb.concatenerlistebytes(listedonnees)
     tailledonneesbit = len(donnees) * 8
-    return tailledonneesbit == largeur * hauteur and bool
+    return tailledonneesbit == largeur * hauteur and debut == b'Mini-PNG'
 
 
 def isdonnesconformesniveauxdegris(largeur, hauteur,
-                                   listeblocs):  # On veut que Hauteur * Largeur * nombre octets par pixel = taille
+                                   listeblocs, debut):  # On veut que Hauteur * Largeur * nombre octets par pixel = taille
     listedonnees = []
-    bool = True
     for i in range(len(listeblocs)):
         (type_bloc, l), contenu = listeblocs[i]
         if type_bloc == 68:
             listedonnees += [contenu]
         bonnelongueur = l == len(contenu)
         if not bonnelongueur:
-            bool = False
+            return False
     donnees = fb.concatenerlistebytes(listedonnees)
     tailledonneesbit = len(donnees) * 8
-    return tailledonneesbit == largeur * hauteur * 8 and bool
+    return tailledonneesbit == largeur * hauteur * 8 and debut == b'Mini-PNG'
 
 
 def isdonnesconformes24bits(largeur, hauteur,
-                            listeblocs):  # On veut que Hauteur * Largeur * nombre octets par pixel = taille
+                            listeblocs, debut):  # On veut que Hauteur * Largeur * nombre octets par pixel = taille
     # fichier donnees
     listedonnees = []
-    bool = True
     for i in range(len(listeblocs)):
         (type_bloc, l), contenu = listeblocs[i]
         if type_bloc == 68:
             listedonnees += [contenu]
         bonnelongueur = l == len(contenu)
         if not bonnelongueur:
-            bool = False
+            return  False
     donnees = fb.concatenerlistebytes(listedonnees)
     tailledonneesbit = len(donnees) * 8
-    return tailledonneesbit == largeur * hauteur * 24 and bool
+    return tailledonneesbit == largeur * hauteur * 24 and debut == b'Mini-PNG'
 
 
 def isdonnesconformespalette(largeur, hauteur,
-                             listeblocs):  # On veut que Hauteur * Largeur * nombre octets par pixel = taille
+                             listeblocs, debut):  # On veut que Hauteur * Largeur * nombre octets par pixel = taille
     listedonnees = []
-    bool = True
     for i in range(len(listeblocs)):
         (type_bloc, l), contenu = listeblocs[i]
         if type_bloc == 68:
             listedonnees += [contenu]
         bonnelongueur = l == len(contenu)
         if not bonnelongueur:
-            bool = False
+            return False
+        if type_bloc == 80:
+            taillepalette3 = l
+            palette = contenu
+    if taillepalette3%3 != 0:
+        return False
+    taillepalette = taillepalette3//3
     donnees = fb.concatenerlistebytes(listedonnees)
+    for d in donnees:
+        if d>=taillepalette:
+            return False
     tailledonneesbit = len(donnees) * 8
-    return tailledonneesbit == largeur * hauteur * 8 and bool
+    return tailledonneesbit == largeur * hauteur * 8 and debut == b'Mini-PNG'
