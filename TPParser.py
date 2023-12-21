@@ -1,5 +1,5 @@
 def obtenirfichier(path):
-
+    return open(path, "rb").read().hex()
 
 def decouperbloc(fichier):
     listebloc = []
@@ -7,7 +7,6 @@ def decouperbloc(fichier):
     i = 16
     while i < n:
         typepixel = fichier[i:i + 2]
-        print(typepixel)
         if typepixel not in ["43", "48", "44"]:
             raise Exception("Problème : un bloc n'est pas H, C ou D")
         longueur = int(fichier[i + 2:i + 10], 16)
@@ -78,15 +77,18 @@ def Afficherimagenoiretblanc(fichier):
     listeblocs = decouperbloc(fichier)
     if type_pixel != 0:
         raise Exception("Image pas en noir et blanc")
-    donnees = ''
-    print(listeblocs)
-    for (type_bloc, contenu) in listeblocs:
-        if type_bloc == 44:
-            donnees += bin(int(contenu, 16))
-    for i in range(hauteur):
-        for j in range(largeur):
-            if donnees[i * (hauteur-1) + j] == 0:
+    donneeshex = ""
+    for i in range(len(listeblocs)):
+        type_bloc, contenu = listeblocs[i]
+        if type_bloc == "44":
+            donneeshex +=contenu
+    donnees = bin(int(donneeshex, 16))
+    for j in range(largeur):
+        for i in range(hauteur):
+            if donnees[i * (largeur) + j] == "0":
                 print("X", end='')
+            else:
+                print(" ", end='')
         print("")  # faire un retour à la ligne une fois la largeur finie
     return
 
