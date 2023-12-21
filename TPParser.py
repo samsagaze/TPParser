@@ -1,11 +1,11 @@
 def decouperbloc(fichier):
     listebloc = []
     n = len(fichier)
-    i = 8
+    i = 16
     while i < n:
         typepixel = fichier[i:i + 2]
         print(typepixel)
-        if typepixel not in [43, 48, 44]:
+        if typepixel not in ["43", "48", "44"]:
             raise Exception("Problème : un bloc n'est pas H, C ou D")
         longueur = int(fichier[i + 2:i + 10], 16)
         contenu = fichier[i + 10:i + 10 + 2 * longueur]
