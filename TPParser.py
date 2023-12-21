@@ -30,8 +30,7 @@ def Commentaires(listeblocs):
     return bytes.fromhex(commentaireshex).decode("ASCII")
 
 
-def PremierPas(path):  # file sous forme C:/...
-    fichier = open(path, "rb").read().hex()
+def PremierPas(fichier):  # file sous forme C:/...
     largeur = int(fichier[26:34], 16)
     hauteur = int(fichier[34:42], 16)
     type_pixel = int(fichier[42:44], 16)
@@ -83,9 +82,9 @@ def Afficherimagenoiretblanc(fichier):
         if type_bloc == "44":
             donneeshex +=contenu
     donnees = bin(int(donneeshex, 16))
-    for j in range(largeur):
-        for i in range(hauteur):
-            if donnees[i * (largeur) + j] == "0":
+    for i in range(hauteur):
+        for j in range(largeur):
+            if donnees[i * (largeur) + j+2] == "0":
                 print("X", end='')
             else:
                 print(" ", end='')
@@ -113,4 +112,18 @@ def isdonnesconformes24bits(largeur, hauteur,
     tailledonneesbit = len(donnees) * 4
     return tailledonneesbit == largeur * hauteur * 24
 
-#def Afficherimageniveauxdegris(fichier):
+def topgm(fichierentree, fichiersortie):
+    listeblocs = decouperbloc(fichierentree)
+    largeur = int(fichierentree[26:34], 16)
+    hauteur = int(fichierentree[34:42], 16)
+    type_pixel = int(fichierentree[42:44], 16)
+    donneeshex = ""
+    for i in range(len(listeblocs)):
+        type_bloc, contenu = listeblocs[i]
+        if type_bloc == "44":
+            donneeshex += contenu
+    donnees = bin(int(donneeshex, 16))
+
+
+
+
